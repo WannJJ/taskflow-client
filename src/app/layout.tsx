@@ -1,4 +1,4 @@
-import Providers from "@/components/providers";
+import { QueryProvider } from "@/providers/query-provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -6,8 +6,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TaskFlow",
-  description: "Your personal productivity workspace",
+  title: "TaskFlow - Productivity Workspace",
+  description: "Manage tasks and notes efficiently",
 };
 
 export default function RootLayout({
@@ -16,9 +16,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="vi">
       <body className={inter.className}>
-        <Providers>{children}</Providers>
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );
