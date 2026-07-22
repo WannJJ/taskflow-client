@@ -1,21 +1,22 @@
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 
 interface User {
   id: string;
   email: string;
-  name: string;
+  displayName: string | null;
+  avatarUrl: string | null;
 }
 
 interface AuthState {
   user: User | null;
   accessToken: string | null;
-  isLoading: boolean;
-  setAuth: (user: User, token: string) => void;
-  setAccessToken: (token: string) => void;
-  setUser: (user: User) => void;
+  isAuthenticated: boolean;
+
+  // Actions
+  setAuth: (user: User, accessToken: string) => void;
   logout: () => void;
-  setLoading: (loading: boolean) => void;
+  updateUser: (user: Partial<User>) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -23,20 +24,32 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       accessToken: null,
-      isLoading: true,
-      setAuth: (user, token) =>
-        set({ user, accessToken: token, isLoading: false }),
-      setAccessToken: (token) => set({ accessToken: token }),
-      setUser: (user) => set({ user }),
-      logout: () => set({ user: null, accessToken: null, isLoading: false }),
-      setLoading: (loading) => set({ isLoading: loading }),
+      isAuthenticated: false,
+
+      setAuth: (user, accessToken) => {
+        set({ user, accessToken, isAuthenticated: true });
+        // Lưu token vào localStorage để axios interceptor dùng
+        localStorage.setItem("accessToken", accessToken);
+      },
+
+      logout: () => {
+        set({ user: null, accessToken: null, isAuthenticated: false });
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+      },
+
+      updateUser: (userData) => {
+        set((state) => ({
+          user: state.user ? { ...state.user, ...userData } : null,
+        }));
+      },
     }),
     {
-      name: "auth-storage",
-      storage: createJSONStorage(() => localStorage),
+      name: "auth-storage", // Key trong localStorage
       partialize: (state) => ({
         user: state.user,
         accessToken: state.accessToken,
+        isAuthenticated: state.isAuthenticated,
       }),
     },
   ),
