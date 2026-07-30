@@ -19,6 +19,14 @@ interface AuthState {
   updateUser: (user: Partial<User>) => void;
 }
 
+/**
+ * Zustand store quản lý trạng thái xác thực
+ * Dùng persist middleware để lưu vào localStorage
+ *
+ * Lưu ý: Access Token lưu ở memory (Zustand store) là an toàn hơn LocalStorage
+ * nhưng vì persist nên nó sẽ lưu xuống localStorage. Trong production thực tế,
+ * bạn nên chỉ persist user info, còn token giữ ở memory hoặc dùng http-only cookie.
+ */
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
@@ -26,26 +34,19 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       isAuthenticated: false,
 
-      setAuth: (user, accessToken) => {
-        set({ user, accessToken, isAuthenticated: true });
-        // Lưu token vào localStorage để axios interceptor dùng
-        localStorage.setItem("accessToken", accessToken);
-      },
+      setAuth: (user, accessToken) =>
+        set({ user, accessToken, isAuthenticated: true }),
 
-      logout: () => {
-        set({ user: null, accessToken: null, isAuthenticated: false });
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-      },
+      logout: () =>
+        set({ user: null, accessToken: null, isAuthenticated: false }),
 
-      updateUser: (userData) => {
+      updateUser: (updatedFields) =>
         set((state) => ({
-          user: state.user ? { ...state.user, ...userData } : null,
-        }));
-      },
+          user: state.user ? { ...state.user, ...updatedFields } : null,
+        })),
     }),
     {
-      name: "auth-storage", // Key trong localStorage
+      name: "taskflow-auth", // Tên key trong localStorage
       partialize: (state) => ({
         user: state.user,
         accessToken: state.accessToken,
