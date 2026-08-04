@@ -1,21 +1,30 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const PUBLIC_PATHS = ["/login", "/register"];
+/**
+ * 🧠 GIẢI THÍCH MIDDLEWARE TRONG NEXT.JS 14:
+ *
+ * Middleware chạy ở EDGE (trước khi request đến page/component).
+ * Nó rất nhanh nhưng có hạn chế: KHÔNG thể truy cập localStorage (vì chạy ở server).
+ *
+ * → Chúng ta dùng Middleware cho:
+ *    - Redirect cơ bản (ví dụ: / → /dashboard)
+ *    - Kiểm tra cookie nếu có
+ *
+ * → Client-side guard (dùng Zustand) sẽ xử lý phần kiểm tra auth thực sự.
+ */
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get("accessToken")?.value;
-  const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
 
-  // Đã đăng nhập mà vào trang auth → đẩy về dashboard
-  if (token && isPublic) {
+  // Redirect root → dashboard
+  if (pathname === "/") {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Chưa đăng nhập mà vào trang protected → đẩy về login
-  if (!token && !isPublic && pathname !== "/") {
-    return NextResponse.redirect(new URL("/login", request.url));
+  // Các trang auth không cần xử lý gì thêm
+  if (pathname.startsWith("/login") || pathname.startsWith("/register")) {
+    return NextResponse.next();
   }
 
   return NextResponse.next();
@@ -23,6 +32,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Chạy middleware cho tất cả routes trừ static files
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.png$).*)",
   ],
 };
