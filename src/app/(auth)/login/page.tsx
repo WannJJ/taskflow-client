@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { api } from "@/lib/api";
+import { apiPublic } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
 import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import Link from "next/link";
@@ -28,9 +28,13 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const res = await api.post("/auth/login", { email, password });
-      const { user, accessToken } = res.data.data;
-      setAuth(user, accessToken);
+      // Dùng apiPublic (không có interceptor) vì chưa có token
+      const res = await apiPublic.post("/auth/login", { email, password });
+      const { user, accessToken, refreshToken } = res.data.data;
+
+      // 💡 Lưu cả 3 thông tin vào store (accessToken, refreshToken, user)
+      setAuth(user, accessToken, refreshToken);
+
       toast.success("Chào mừng trở lại! 🎉");
       router.push("/dashboard");
     } catch (err: any) {

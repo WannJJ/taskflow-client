@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { api } from "@/lib/api";
+import { apiPublic } from "@/lib/api";
 import {
   ArrowRight,
   Eye,
@@ -54,7 +54,7 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      await api.post("/auth/register", {
+      await apiPublic.post("/auth/register", {
         email: form.email,
         password: form.password,
         displayName: form.displayName || undefined,
