@@ -1,6 +1,6 @@
 "use client";
 
-import { useMoveTask, useTasks } from "@/hooks/use-tasks";
+import { useDeleteTask, useMoveTask, useTasks } from "@/hooks/use-tasks";
 import { KANBAN_COLUMNS, Task, TaskStatus } from "@/types/task";
 import {
   closestCorners,
@@ -18,6 +18,10 @@ import { useCallback, useState } from "react";
 import { KanbanColumn } from "./kanban-column";
 import { KanbanTaskCard } from "./kanban-task-card";
 
+interface KanbanBoardProps {
+  onEditTask: (task: Task) => void; // ⬅️ THÊM PROP NÀY
+}
+
 /**
  * ============================================
  * KANBAN BOARD - COMPONENT CHÍNH
@@ -25,10 +29,11 @@ import { KanbanTaskCard } from "./kanban-task-card";
  * Quản lý toàn bộ logic drag & drop
  * Bao gồm: DndContext, Sensors, DragOverlay
  */
-export function KanbanBoard() {
+export function KanbanBoard({ onEditTask }: KanbanBoardProps) {
   // Lấy danh sách task từ API
   const { data: tasks = [], isLoading } = useTasks();
   const moveTask = useMoveTask();
+  const deleteTask = useDeleteTask();
 
   // State quản lý task local (để UI phản hồi ngay lập tức - Optimistic Update)
   const [localTasks, setLocalTasks] = useState<Task[]>(tasks);
@@ -180,8 +185,8 @@ export function KanbanBoard() {
               key={column.id}
               column={column}
               tasks={column.tasks}
-              onEditTask={(task) => console.log("Edit", task)}
-              onDeleteTask={(id) => console.log("Delete", id)}
+              onEditTask={onEditTask}
+              onDeleteTask={(id) => deleteTask.mutate(id)}
               onAddTask={(status) => console.log("Add to", status)}
             />
           ))}

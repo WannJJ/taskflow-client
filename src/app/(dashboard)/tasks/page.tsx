@@ -19,8 +19,18 @@ type ViewMode = "kanban" | "list";
  */
 export default function TasksPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("kanban");
+  // Quản lý dialog edit
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+  /**
+   * Mở dialog edit
+   * Được truyền xuống KanbanBoard → KanbanColumn → KanbanTaskCard
+   */
+  const handleEditTask = (task: Task) => {
+    setEditingTask(task);
+    setEditDialogOpen(true);
+  };
 
   return (
     <div className="h-[calc(100vh-8rem)] flex flex-col">
@@ -62,7 +72,7 @@ export default function TasksPage() {
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         {viewMode === "kanban" ? (
-          <KanbanBoard />
+          <KanbanBoard onEditTask={handleEditTask} />
         ) : (
           <div className="text-center py-20 text-muted-foreground">
             <List className="w-12 h-12 mx-auto mb-4 opacity-50" />

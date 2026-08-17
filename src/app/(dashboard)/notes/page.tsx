@@ -24,13 +24,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * - Left Sidebar (w-80): Danh sách notes + search + "New Note" button.
  * - Right Main: Editor với title input + TipTap + metadata.
  *
- * 🧠 State Management:
+ *  State Management:
  * - selectedNoteId: note đang được chọn để edit.
  * - title: controlled input cho tiêu đề (cập nhật real-time).
  * - content: nhận từ RichTextEditor qua onChange.
  * - isDirty: đánh dấu có thay đổi chưa save (để hiện "Saving..." / "Saved").
  *
- * 🧠 Auto-save:
+ *  Auto-save:
  * - Dùng useRef để lưu timeoutId, clear cũ trước khi set mới.
  * - Debounce 1.5 giây sau khi user ngừng gõ.
  */
@@ -305,7 +305,7 @@ export default function NotesPage() {
             {/* TipTap Editor */}
             <div className="flex-1 px-6 pb-6 overflow-y-auto">
               <RichTextEditor
-                key={selectedNoteId} // ⬅️ KEY QUAN TRỌNG: force re-mount khi đổi note
+                key={selectedNoteId} // KEY QUAN TRỌNG: force re-mount khi đổi note
                 initialContent={content}
                 onChange={handleContentChange}
                 className="min-h-[500px]"

@@ -23,17 +23,17 @@ interface RichTextEditorProps {
 /**
  * RichTextEditor — Component lõi sử dụng TipTap.
  *
- * 🧠 Cách hoạt động:
+ *   Cách hoạt động:
  * 1. useEditor() tạo instance TipTap với các extensions.
  * 2. EditorContent render ra div contentEditable thực tế.
  * 3. Khi user gõ phím, onUpdate chạy → gọi onChange prop về parent.
  * 4. initialContent được parse từ JSON string → object rồi set vào editor.
  *
- * ⚠️ Lưu ý QUAN TRỌNG:
- * - Không dùng useState cho content bên trong component này.
+ *   Lưu ý QUAN TRỌNG:
+ * - Không dùng useState cho content bên trong.
  * - TipTap quản lý state nội bộ qua ProseMirror. Mình chỉ "lấy ra" qua onUpdate.
  * - initialContent chỉ set 1 lần khi mount. Để cập nhật từ bên ngoài (chuyển note),
- *   bạn cần dùng key={noteId} ở component cha để force re-mount.
+ *   cần dùng key={noteId} ở component cha để force re-mount.
  */
 export function RichTextEditor({
   initialContent = "",

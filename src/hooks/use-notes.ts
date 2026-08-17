@@ -15,8 +15,8 @@ export interface Note {
 }
 
 /**
- * Key cho React Query cache.
- * Dùng để invalidate (làm mới) dữ liệu sau khi create/update/delete.
+ * Key cho React Query cache
+ * Dùng để invalidate/làm mới  dữ liệu sau khi create/update/delete.
  */
 const NOTES_KEY = "notes";
 
