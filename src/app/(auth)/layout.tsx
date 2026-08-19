@@ -33,7 +33,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
                   TaskFlow
                 </span>
               </div>
-              <h1 className="text-4xl xl:text-5xl font-bold leading-tight mb-6">
+              <h1 className="text-4xl xl:text-5xl font-bold leading-snug xl:leading-tight mb-6">
                 Quản lý công việc
                 <br />
                 <span className="text-indigo-200">thông minh hơn</span>

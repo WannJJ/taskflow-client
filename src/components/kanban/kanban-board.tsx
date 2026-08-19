@@ -19,7 +19,7 @@ import { KanbanColumn } from "./kanban-column";
 import { KanbanTaskCard } from "./kanban-task-card";
 
 interface KanbanBoardProps {
-  onEditTask: (task: Task) => void; // ⬅️ THÊM PROP NÀY
+  onEditTask: (task: Task) => void;
 }
 
 /**

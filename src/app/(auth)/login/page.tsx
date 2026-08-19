@@ -35,7 +35,7 @@ export default function LoginPage() {
       // 💡 Lưu cả 3 thông tin vào store (accessToken, refreshToken, user)
       setAuth(user, accessToken, refreshToken);
 
-      toast.success("Chào mừng trở lại! 🎉");
+      toast.success("Chào mừng trở lại!");
       router.push("/dashboard");
     } catch (err: any) {
       const msg = err.response?.data?.error?.message || "Đăng nhập thất bại";
