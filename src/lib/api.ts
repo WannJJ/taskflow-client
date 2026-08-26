@@ -147,7 +147,7 @@ api.interceptors.response.use(
       originalRequest.headers.Authorization = `Bearer ${accessToken}`;
       return api(originalRequest);
     } catch (refreshError) {
-      // Refresh token cũng hết hạn hoặc i  nvalid → logout
+      // Refresh token cũng hết hạn hoặc invalid → logout
       useAuthStore.getState().logout();
       if (typeof window !== "undefined") {
         window.location.href = "/login";
