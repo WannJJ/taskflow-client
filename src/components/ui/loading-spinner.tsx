@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Loading Spinner
- * Hiển thị vòng xoay khi đang xử lý (submit form, load data)
+ * Xoay khi đang xử lý (submit form, load data)
  *
  * Kích thước:
  * - sm: 16px (inline, trong button)
