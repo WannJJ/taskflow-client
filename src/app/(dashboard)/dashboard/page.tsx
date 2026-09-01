@@ -1,78 +1,148 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { RecentNotes } from "@/components/dashboard/recent-notes";
+import { RecentTasks } from "@/components/dashboard/recent-tasks";
+import { StatsCard } from "@/components/dashboard/stats-card";
+import { useApi } from "@/hooks/use-api";
+import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
-import { AlertCircle, CheckSquare, Clock, StickyNote } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  ListTodo,
+  Plus,
+  StickyNote,
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect } from "react";
 
+/**
+ * Dashboard Overview Page
+ *
+ * Hiển thị:
+ * 1. Welcome message (theo giờ trong ngày)
+ * 2. Stats cards (4 cards)
+ * 3. Quick Actions
+ * 4. Recent Tasks + Recent Notes
+ *
+ * Responsive:
+ * - Mobile: 1 cột cho stats, stack cho recent items
+ * - Tablet: 2 cột cho stats
+ * - Desktop: 4 cột cho stats, 2 cột cho recent items
+ */
 export default function DashboardPage() {
   const user = useAuthStore((s) => s.user);
+  const {
+    data: tasks,
+    loading: tasksLoading,
+    execute: fetchTasks,
+  } = useApi<any[]>();
+  const {
+    data: notes,
+    loading: notesLoading,
+    execute: fetchNotes,
+  } = useApi<any[]>();
 
-  // TODO: Sau này fetch real data từ API
-  const stats = [
-    {
-      title: "Tổng Task",
-      value: "12",
-      icon: CheckSquare,
-      color: "text-blue-500",
-    },
-    { title: "Đang làm", value: "5", icon: Clock, color: "text-yellow-500" },
-    {
-      title: "Hoàn thành",
-      value: "4",
-      icon: CheckSquare,
-      color: "text-green-500",
-    },
-    {
-      title: "Ghi chú",
-      value: "8",
-      icon: StickyNote,
-      color: "text-purple-500",
-    },
-  ];
+  useEffect(() => {
+    fetchTasks(() => api.get("/tasks"));
+    fetchNotes(() => api.get("/notes"));
+  }, [fetchTasks, fetchNotes]);
+
+  const totalTasks = tasks?.length || 0;
+  const doneTasks = tasks?.filter((t: any) => t.status === "DONE").length || 0;
+  const inProgressTasks =
+    tasks?.filter((t: any) => t.status === "IN_PROGRESS").length || 0;
+  const overdueTasks =
+    tasks?.filter((t: any) => {
+      if (!t.dueDate || t.status === "DONE") return false;
+      return new Date(t.dueDate) < new Date();
+    }).length || 0;
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Chào buổi sáng";
+    if (hour < 18) return "Chào buổi chiều";
+    return "Chào buổi tối";
+  };
+
+  const isLoading = tasksLoading || notesLoading;
 
   return (
-    <div className="space-y-6">
-      {/* Welcome */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Chào mừng, {user?.displayName || user?.email}! 👋
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Đây là tổng quan công việc của bạn hôm nay.
-        </p>
+    <div className="space-y-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            {getGreeting()}, {user?.displayName || user?.email?.split("@")[0]}!
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Đây là tổng quan công việc của bạn hôm nay.
+          </p>
+        </div>
+
+        <div className="flex gap-2">
+          <Link
+            href="/tasks"
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            <Plus className="h-4 w-4" />
+            Task mới
+          </Link>
+          <Link
+            href="/notes"
+            className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+          >
+            <StickyNote className="h-4 w-4" />
+            Ghi chú
+          </Link>
+        </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className={`h-4 w-4 ${stat.color}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          title="Tổng task"
+          value={totalTasks}
+          icon={ListTodo}
+          description={`${doneTasks} đã hoàn thành`}
+          trend="neutral"
+          loading={isLoading}
+        />
+        <StatsCard
+          title="Hoàn thành"
+          value={doneTasks}
+          icon={CheckCircle2}
+          description={
+            totalTasks > 0
+              ? `${Math.round((doneTasks / totalTasks) * 100)}% tổng số`
+              : "0%"
+          }
+          trend="up"
+          loading={isLoading}
+        />
+        <StatsCard
+          title="Đang làm"
+          value={inProgressTasks}
+          icon={Clock}
+          description="Đang tiến hành"
+          trend="neutral"
+          loading={isLoading}
+        />
+        <StatsCard
+          title="Quá hạn"
+          value={overdueTasks}
+          icon={AlertTriangle}
+          description={
+            overdueTasks > 0 ? "Cần xử lý ngay" : "Không có task quá hạn"
+          }
+          trend={overdueTasks > 0 ? "down" : "neutral"}
+          loading={isLoading}
+        />
       </div>
 
-      {/* Quick Actions / Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-primary" />
-            Tiếp theo
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm text-muted-foreground">
-          <p>✅ Phase 1 & 2 hoàn thành: Auth System đã chạy ổn định</p>
-          <p>🔄 Phase 3 sắp tới: Task CRUD + Kanban Board với Drag & Drop</p>
-          <p>📝 Phase 4: Notes với Rich Text Editor</p>
-        </CardContent>
-      </Card>
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+        <RecentTasks tasks={tasks || []} loading={tasksLoading} />
+        <RecentNotes notes={notes || []} loading={notesLoading} />
+      </div>
     </div>
   );
 }
