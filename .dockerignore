@@ -1,0 +1,41 @@
+# ============================================
+# .dockerignore - Frontend
+# ============================================
+
+# Dependencies
+node_modules
+npm-debug.log
+
+# Next.js build output (sẽ được tạo lại)
+.next
+out
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+
+# Test
+coverage
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Logs
+*.log
+
+# Documentation
+README.md
+*.md
