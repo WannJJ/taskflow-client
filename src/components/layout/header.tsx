@@ -39,8 +39,8 @@ export function Header() {
 
       {/* User dropdown */}
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+        <DropdownMenuTrigger  className="relative flex h-9 w-9 items-center justify-center rounded-full outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+          
             <Avatar className="h-9 w-9">
               <AvatarFallback className="bg-primary text-primary-foreground">
                 {user?.displayName?.charAt(0)?.toUpperCase() ||
@@ -48,8 +48,8 @@ export function Header() {
                   "U"}
               </AvatarFallback>
             </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
+       
+        </DropdownMenuTrigger>			
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel>
             <div className="flex flex-col space-y-1">

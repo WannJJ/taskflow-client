@@ -120,15 +120,11 @@ export function Navbar() {
         <div className="flex items-center gap-3 mr-4">
           {/* Hamburger - chỉ hiện trên mobile (< md) */}
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 md:hidden"
-                aria-label="Open menu"
-              >
+            <SheetTrigger  className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground md:hidden"
+          aria-label="Open menu">		
+              
                 <Menu className="h-5 w-5" />
-              </Button>
+              
             </SheetTrigger>
             <SheetContent side="left" className="w-[280px] p-0">
               <MobileNav onNavigate={() => setMobileOpen(false)} />
